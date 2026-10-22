@@ -75,6 +75,9 @@ jobs:
           if [ ! -f "buildozer.spec" ]; then
             buildozer init
           fi
+          # Forzar arquitectura única de 32 bits para evitar fallos de memoria en GitHub Actions
+          sed -i 's/# android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
+          sed -i 's/android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
 
       - name: Compilador APK con Buildozer
         env:
