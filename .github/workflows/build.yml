@@ -38,6 +38,10 @@ jobs:
           pip install --upgrade pip
           pip install --user --upgrade Cython==0.29.36 buildozer
 
+      - name: Verificar que el buildozer.spec existe
+        run: |
+          ls -la buildozer.spec
+
       - name: Inyectar licencias de Android para evitar bloqueo
         run: |
           mkdir -p ~/.android
