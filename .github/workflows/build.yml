@@ -70,14 +70,17 @@ jobs:
           # Forzar la instalación de las herramientas de compilación
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;37.0.0" "platforms;android-33" "platform-tools"
 
-      - name: Verificar o inicializar buildozer.spec
+      - name: Verificar o inicializar buildozer.spec y optimizar requisitos
         run: |
           if [ ! -f "buildozer.spec" ]; then
             buildozer init
           fi
-          # Forzar arquitectura única de 32 bits para evitar fallos de memoria en GitHub Actions
+          # Forzar arquitectura única de 32 bits
           sed -i 's/# android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
           sed -i 's/android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
+          
+          # Limpiar versiones estrictas de pip que den problemas de compilación
+          sed -i 's/requirements = .*/requirements = python3,kivy,kivymd,requests/g' buildozer.spec
 
       - name: Compilador APK con Buildozer
         env:
