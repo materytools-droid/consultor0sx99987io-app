@@ -38,7 +38,7 @@ jobs:
           pip install --upgrade pip
           pip install --user --upgrade Cython==0.29.36 buildozer
 
-      - name: Instalar SDK de Android y crear enlace para sdkmanager
+      - name: Instalar SDK de Android, herramientas y aceptar licencias
         run: |
           rm -f ~/.android/licenses
           rm -rf $HOME/.buildozer/android/platform/android-sdk/licenses
@@ -53,19 +53,22 @@ jobs:
           mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/ 2>/dev/null || true
           rm commandlinetools.zip
 
-          # Crear un enlace simbólico de la carpeta tools para que Buildozer lo encuentre sin chistar
+          # Enlace para que Buildozer encuentre el sdkmanager
           mkdir -p $ANDROID_HOME/tools/bin
           ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
 
-          # Inyectar licencias oficiales
+          # Inyectar licencias completas
           mkdir -p $ANDROID_HOME/licenses
           mkdir -p ~/.android/licenses
           
-          LICENSE_CONTENT="d56f5187479451eabf01fb78af6dfcb131a648b0\n8933bac160af4272fa11e854992d4f559bc1c305\n24333f8a63b6825ea9c5514f83c2829b004d1fb5"
+          LICENSE_CONTENT="d56f5187479451eabf01fb78af6dfcb131a648b0\n8933bac160af4272fa11e854992d4f559bc1c305\n24333f8a63b6825ea9c5514f83c2829b004d1fb5\n24333f8a63b6825ea9c5514f83c2829b004d1fb5"
           echo -e "$LICENSE_CONTENT" > $ANDROID_HOME/licenses/android-sdk-license
           echo -e "$LICENSE_CONTENT" > ~/.android/licenses/android-sdk-license
           
           echo "### License accepted" > ~/.android/repositories.cfg
+
+          # Forzar la instalación de las herramientas de compilación con yes para aceptar licencias automáticamente
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;37.0.0" "platforms;android-33" "platform-tools"
 
       - name: Compilador APK con Buildozer
         run: |
