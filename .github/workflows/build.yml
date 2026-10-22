@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_ACCEPT_LICENSE: "true"
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +31,7 @@ jobs:
 
       - name: Compilador APK con Buildozer
         run: |
-          yes | buildozer -v android debug
+          buildozer -v android debug
 
       - name: Subir APK generada
         uses: actions/upload-artifact@v4
