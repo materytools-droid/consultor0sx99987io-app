@@ -40,18 +40,15 @@ jobs:
 
       - name: Inyectar licencias de Android limpias
         run: |
-          # Eliminar conflictos previos si existen como archivo
           rm -rf ~/.android/licenses
           rm -rf $HOME/.buildozer/android/platform/android-sdk/licenses
           
-          # Crear directorios limpios
           mkdir -p ~/.android
           mkdir -p ~/.android/licenses
           mkdir -p $HOME/.buildozer/android/platform/android-sdk/licenses
           
           echo "### License accepted" > ~/.android/repositories.cfg
           
-          # Hashes oficiales de licencias
           LICENSE_CONTENT="d56f5187479451eabf01fb78af6dfcb131a648b0\n8933bac160af4272fa11e854992d4f559bc1c305\n24333f8a63b6825ea9c5514f83c2829b004d1fb5"
           
           echo -e "$LICENSE_CONTENT" > ~/.android/licenses/android-sdk-license
