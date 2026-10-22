@@ -27,6 +27,9 @@ requirements = python3,kivy,kivymd,requests,urllib3,certifi,charset-normalizer,i
 # (list) Supported orientations
 orientation = portrait
 
+# (int) Log level (0 = error only, 1 = info, 2 = debug)
+log_level = 2
+
 #
 # Android specific
 #
