@@ -38,10 +38,6 @@ jobs:
           pip install --upgrade pip
           pip install --user --upgrade Cython==0.29.36 buildozer
 
-      - name: Verificar que el buildozer.spec existe
-        run: |
-          ls -la buildozer.spec
-
       - name: Inyectar licencias de Android para evitar bloqueo
         run: |
           mkdir -p ~/.android
@@ -52,8 +48,9 @@ jobs:
           echo -e "$LICENSE_HASHES" > $HOME/.android/licenses/android-sdk-license
           echo -e "$LICENSE_HASHES" > .buildozer/android/platform/android-sdk/licenses/android-sdk-license
 
-      - name: Compilador APK con Buildozer
+      - name: Limpiar compilaciones previas y compilar APK
         run: |
+          buildozer -v android clean
           buildozer -v android debug
 
       - name: Subir APK generada
