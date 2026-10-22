@@ -38,15 +38,19 @@ jobs:
           pip install --upgrade pip
           pip install --user --upgrade Cython==0.29.36 buildozer
 
-      - name: Inyectar licencias de Android y preparar SDK
+      - name: Inyectar licencias de Android estructuradas
         run: |
+          SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
+          mkdir -p $SDK_DIR/licenses
           mkdir -p ~/.android
           echo "### License accepted" > ~/.android/repositories.cfg
-          mkdir -p $HOME/.android/licenses
-          mkdir -p .buildozer/android/platform/android-sdk/licenses
-          LICENSE_HASHES="\n8933bac160af4272fa11e854992d4f559bc1c305\n24333f8a63b6825ea9c5514f83c2829b004d1fb5\nd56f5187479451eabf01fb78af6dfcb131a648b0\n24333f8a63b6825ea9c5514f83c2829b004d1fb5"
-          echo -e "$LICENSE_HASHES" > $HOME/.android/licenses/android-sdk-license
-          echo -e "$LICENSE_HASHES" > .buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          
+          # Hash oficial aceptado por el SDK de Android
+          echo "d56f5187479451eabf01fb78af6dfcb131a648b0" > $SDK_DIR/licenses/android-sdk-license
+          echo "8933bac160af4272fa11e854992d4f559bc1c305" >> $SDK_DIR/licenses/android-sdk-license
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fb5" >> $SDK_DIR/licenses/android-sdk-license
+          
+          cp $SDK_DIR/licenses/android-sdk-license ~/.android/licenses/
 
       - name: Compilador APK con Buildozer
         run: |
