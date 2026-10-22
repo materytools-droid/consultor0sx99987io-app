@@ -38,16 +38,14 @@ jobs:
           pip install --upgrade pip
           pip install --user --upgrade Cython==0.29.36 buildozer
 
-      - name: Instalar SDK de Android y herramientas de línea de comandos
+      - name: Instalar SDK de Android y crear enlace para sdkmanager
         run: |
-          # Eliminar por completo cualquier archivo o carpeta conflictiva previa
           rm -f ~/.android/licenses
           rm -rf $HOME/.buildozer/android/platform/android-sdk/licenses
 
           ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
           mkdir -p $ANDROID_HOME/cmdline-tools
           
-          # Descargar command-line tools oficiales de Android
           cd $ANDROID_HOME
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           unzip -q commandlinetools.zip
@@ -55,7 +53,11 @@ jobs:
           mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/ 2>/dev/null || true
           rm commandlinetools.zip
 
-          # Inyectar licencias oficiales creando directorios seguros
+          # Crear un enlace simbólico de la carpeta tools para que Buildozer lo encuentre sin chistar
+          mkdir -p $ANDROID_HOME/tools/bin
+          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+
+          # Inyectar licencias oficiales
           mkdir -p $ANDROID_HOME/licenses
           mkdir -p ~/.android/licenses
           
