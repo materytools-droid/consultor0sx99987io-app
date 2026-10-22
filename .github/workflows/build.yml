@@ -24,12 +24,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Instalar dependencias del sistema
+      - name: Instalar dependencias del sistema y arquitectura de 32 bits
         run: |
+          sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y \
             git zip unzip python3-pip autoconf libtool pkg-config \
-            zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev libtool-bin
+            zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev libtool-bin \
+            libc6:i386 libstdc++6:i386 zlib1g:i386 libbz2-1.0:i386
 
       - name: Actualizar pip y herramientas de Python
         run: |
@@ -40,14 +42,9 @@ jobs:
         run: |
           mkdir -p ~/.android
           echo "### License accepted" > ~/.android/repositories.cfg
-          
-          # Crear la carpeta de licencias globales e internas que busca buildozer
           mkdir -p $HOME/.android/licenses
           mkdir -p .buildozer/android/platform/android-sdk/licenses
-          
-          # Hashes oficiales de las licencias de Android SDK para aceptarlas por la fuerza
           LICENSE_HASHES="\n8933bac160af4272fa11e854992d4f559bc1c305\n24333f8a63b6825ea9c5514f83c2829b004d1fb5\nd56f5187479451eabf01fb78af6dfcb131a648b0\n24333f8a63b6825ea9c5514f83c2829b004d1fb5"
-          
           echo -e "$LICENSE_HASHES" > $HOME/.android/licenses/android-sdk-license
           echo -e "$LICENSE_HASHES" > .buildozer/android/platform/android-sdk/licenses/android-sdk-license
 
