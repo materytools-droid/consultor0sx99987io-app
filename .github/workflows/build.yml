@@ -24,12 +24,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Instalar dependencias del sistema y arquitectura de 32 bits
+      - name: Instalar dependencias del sistema y herramientas actualizadas
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y \
-            git zip unzip python3-pip autoconf libtool pkg-config \
+            git zip unzip python3-pip autoconf automake libtool pkg-config \
             zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev libtool-bin \
             libc6:i386 libstdc++6:i386 zlib1g:i386 libbz2-1.0:i386
 
@@ -67,7 +67,7 @@ jobs:
           
           echo "### License accepted" > ~/.android/repositories.cfg
 
-          # Forzar la instalación de las herramientas de compilación con yes para aceptar licencias automáticamente
+          # Forzar la instalación de las herramientas de compilación
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;37.0.0" "platforms;android-33" "platform-tools"
 
       - name: Compilador APK con Buildozer
