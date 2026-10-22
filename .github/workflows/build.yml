@@ -2,7 +2,8 @@ name: Compilador APK con Buildozer
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,26 +12,31 @@ jobs:
       ANDROID_ACCEPT_LICENSE: "true"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Descomprimir proyecto
-        run: |
-          unzip app_medica_ia.zip -d .
+        run: ls -la
 
       - name: Instalar dependencias de Buildozer
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --upgrade pip
-          pip install buildozer Cython==0.29.33
+          pip install --user --upgrade Cython==0.29.36 buildozer
 
       - name: Compilador APK con Buildozer
         run: |
+          mkdir -p ~/.android
+          echo "### License accepted" > ~/.android/repositories.cfg
+          yes | sdkmanager --licenses || true
           buildozer -v android debug
 
       - name: Subir APK generada
