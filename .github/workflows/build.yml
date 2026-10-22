@@ -13,83 +13,11 @@ jobs:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
+      - name: Compilación automática con Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
         with:
-          python-version: '3.10'
-
-      - name: Configurar Java JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Instalar dependencias del sistema y herramientas actualizadas
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install -y \
-            git zip unzip python3-pip autoconf automake libtool pkg-config \
-            zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev libtool-bin \
-            libc6:i386 libstdc++6:i386 zlib1g:i386 libbz2-1.0:i386
-
-      - name: Actualizar pip y herramientas de Python
-        run: |
-          pip install --upgrade pip
-          pip install --user --upgrade Cython==0.29.36 buildozer
-
-      - name: Instalar SDK de Android, herramientas y aceptar licencias
-        run: |
-          rm -f ~/.android/licenses
-          rm -rf $HOME/.buildozer/android/platform/android-sdk/licenses
-
-          ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          
-          cd $ANDROID_HOME
-          curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          unzip -q commandlinetools.zip
-          mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest/ 2>/dev/null || true
-          rm commandlinetools.zip
-
-          # Enlace para que Buildozer encuentre el sdkmanager
-          mkdir -p $ANDROID_HOME/tools/bin
-          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
-
-          # Inyectar licencias completas
-          mkdir -p $ANDROID_HOME/licenses
-          mkdir -p ~/.android/licenses
-          
-          LICENSE_CONTENT="d56f5187479451eabf01fb78af6dfcb131a648b0\n8933bac160af4272fa11e854992d4f559bc1c305\n24333f8a63b6825ea9c5514f83c2829b004d1fb5\n24333f8a63b6825ea9c5514f83c2829b004d1fb5"
-          echo -e "$LICENSE_CONTENT" > $ANDROID_HOME/licenses/android-sdk-license
-          echo -e "$LICENSE_CONTENT" > ~/.android/licenses/android-sdk-license
-          
-          echo "### License accepted" > ~/.android/repositories.cfg
-
-          # Forzar la instalación de las herramientas de compilación
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;37.0.0" "platforms;android-33" "platform-tools"
-
-      - name: Verificar o inicializar buildozer.spec y optimizar requisitos
-        run: |
-          if [ ! -f "buildozer.spec" ]; then
-            buildozer init
-          fi
-          # Forzar arquitectura única de 32 bits
-          sed -i 's/# android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
-          sed -i 's/android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
-          
-          # Limpiar requerimientos para evitar recetas conflictivas
-          sed -i 's/requirements = .*/requirements = python3,kivy,kivymd,requests/g' buildozer.spec
-
-      - name: Compilador APK con Buildozer
-        env:
-          USE_SDK_WRAPPER: "1"
-          AUTOCONF: "true"
-        run: |
-          # Parche preventivo para evitar el fallo de libffi con macros antiguas de autoconf
-          find . -name "libffi" -type d 2>/dev/null || true
-          buildozer -v android debug
+          command: android debug
+          buildozer_version: master
 
       - name: Subir APK generada
         uses: actions/upload-artifact@v4
