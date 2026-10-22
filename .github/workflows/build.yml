@@ -48,9 +48,8 @@ jobs:
           echo -e "$LICENSE_HASHES" > $HOME/.android/licenses/android-sdk-license
           echo -e "$LICENSE_HASHES" > .buildozer/android/platform/android-sdk/licenses/android-sdk-license
 
-      - name: Limpiar compilaciones previas y compilar APK
+      - name: Compilador APK con Buildozer
         run: |
-          buildozer -v android clean
           buildozer -v android debug
 
       - name: Subir APK generada
