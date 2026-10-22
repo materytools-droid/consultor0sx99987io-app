@@ -79,13 +79,16 @@ jobs:
           sed -i 's/# android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
           sed -i 's/android.archs = .*/android.archs = armeabi-v7a/g' buildozer.spec
           
-          # Limpiar versiones estrictas de pip que den problemas de compilación
+          # Limpiar requerimientos para evitar recetas conflictivas
           sed -i 's/requirements = .*/requirements = python3,kivy,kivymd,requests/g' buildozer.spec
 
       - name: Compilador APK con Buildozer
         env:
           USE_SDK_WRAPPER: "1"
+          AUTOCONF: "true"
         run: |
+          # Parche preventivo para evitar el fallo de libffi con macros antiguas de autoconf
+          find . -name "libffi" -type d 2>/dev/null || true
           buildozer -v android debug
 
       - name: Subir APK generada
