@@ -70,7 +70,15 @@ jobs:
           # Forzar la instalación de las herramientas de compilación
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "build-tools;37.0.0" "platforms;android-33" "platform-tools"
 
+      - name: Verificar o inicializar buildozer.spec
+        run: |
+          if [ ! -f "buildozer.spec" ]; then
+            buildozer init
+          fi
+
       - name: Compilador APK con Buildozer
+        env:
+          USE_SDK_WRAPPER: "1"
         run: |
           buildozer -v android debug
 
